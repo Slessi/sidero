@@ -1,0 +1,11 @@
+# commit to be tagged for the new release
+commit = "HEAD"
+
+project_name = "fe-test-service"
+github_repo = "unix4ever/fe-test-service"
+match_deps = "^github.com/(unix4ever/[a-zA-Z0-9-]+)$"
+
+# previous = -
+# pre_release = true
+
+# [notes]

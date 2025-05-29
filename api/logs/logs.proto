@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package logs;
+
+option go_package = "github.com/unix4ever/fe-test-server/api/logs";
+
+import "google/api/annotations.proto";
+
+message ListRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+}
+
+message ListResponse {
+  repeated string lines = 1;
+}
+
+service LogsService {
+  rpc List(ListRequest) returns (ListResponse) {
+    option (google.api.http) = {
+      get: "/v1/logs"
+    };
+  };
+}
