@@ -24,6 +24,12 @@ npm run build
 npm run test:unit
 ```
 
+Or to run in a browser
+
+```sh
+npm run test:browser
+```
+
 ### Lint with [ESLint](https://eslint.org/)
 
 ```sh
