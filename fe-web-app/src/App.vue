@@ -1,15 +1,14 @@
 <script setup lang="ts">
+import DateFilter from '@/components/date-filter/DateFilter.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { RangeCalendar } from '@/components/ui/range-calendar'
 import { getLocalTimeZone } from '@internationalized/date'
 import { useQuery } from '@tanstack/vue-query'
 import { endOfDay, isWithinInterval, parse, startOfDay, type Interval } from 'date-fns'
 import type { DateRange } from 'reka-ui'
 import { computed, ref } from 'vue'
 
-const { data } = useQuery({
+const { data, error, isLoading, refetch } = useQuery({
   queryKey: ['logs'],
   async queryFn() {
     const response = await fetch('//localhost:12000/v1/logs')
@@ -49,7 +48,6 @@ const mergedLines = computed(() => {
 })
 
 const search = ref('')
-const popoverOpen = ref(false)
 const dateRange = ref<DateRange>({ start: undefined, end: undefined })
 
 const filteredLines = computed(() => {
@@ -75,10 +73,6 @@ const filteredLines = computed(() => {
 const logOutput = computed(() => filteredLines.value.map((l) => l.text).join('\n'))
 const hasFilters = computed(() => search || dateRange.value.start || dateRange.value.end)
 
-function onDateChange() {
-  popoverOpen.value = false
-}
-
 function clearFilters() {
   search.value = ''
   dateRange.value = { start: undefined, end: undefined }
@@ -92,36 +86,21 @@ function clearFilters() {
     </h1>
 
     <div class="flex gap-2">
-      <Popover v-model:open="popoverOpen">
-        <PopoverTrigger as-child>
-          <Button variant="outline">
-            <template v-if="!dateRange.start && !dateRange.end">Date range</template>
-            <template v-else-if="!dateRange.start!.compare(dateRange.end!)">{{
-              dateRange.start
-            }}</template>
-            <template v-else>{{ dateRange.start }} - {{ dateRange.end }}</template>
-          </Button>
-        </PopoverTrigger>
-
-        <PopoverContent class="w-80">
-          <RangeCalendar
-            v-model="dateRange"
-            @update:model-value="onDateChange"
-            class="rounded-md border"
-            D
-          />
-        </PopoverContent>
-      </Popover>
-
+      <DateFilter v-model="dateRange" />
       <Input type="text" placeholder="Search" v-model="search" />
-
       <Button v-if="hasFilters" variant="ghost" @click="clearFilters">Clear filters</Button>
     </div>
 
     <div
-      class="dark:bg-accent/30 border rounded-md px-4 py-2 w-full flex-1 bg-transparent overflow-auto scrollbar-thin scrollbar-thumb-accent-foreground scrollbar-track-[rgba(0,0,0,0)]"
+      class="flex flex-col items-center gap-2 dark:bg-accent/30 border rounded-md px-4 py-2 w-full flex-1 bg-transparent overflow-auto scrollbar-thin scrollbar-thumb-accent-foreground scrollbar-track-[rgba(0,0,0,0)]"
     >
-      <p class="flex items-center justify-center" v-if="hasFilters && !logOutput">No results</p>
+      <p :class="{ 'text-red-800': error }" v-if="!logOutput">
+        <template v-if="isLoading">Loading ...</template>
+        <template v-else-if="error">{{ error.message }}</template>
+        <template v-else="hasFilters">No results</template>
+      </p>
+
+      <Button @click="refetch" variant="outline" class="mx-auto" v-if="error">Retry</Button>
 
       <pre class="text-xs">{{ logOutput }}</pre>
     </div>
