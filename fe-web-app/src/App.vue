@@ -72,6 +72,9 @@ const filteredLines = computed(() => {
   )
 })
 
+const logOutput = computed(() => filteredLines.value.map((l) => l.text).join('\n'))
+const hasFilters = computed(() => search || dateRange.value.start || dateRange.value.end)
+
 function onDateChange() {
   popoverOpen.value = false
 }
@@ -83,8 +86,10 @@ function clearFilters() {
 </script>
 
 <template>
-  <main class="px-4 py-2 flex flex-col h-screen items-start gap-2">
-    <h1 class="text-2xl">Sidero Logs</h1>
+  <main class="px-16 py-4 flex flex-col h-screen items-start gap-4">
+    <h1 class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-4 mx-auto">
+      Sidero Logs
+    </h1>
 
     <div class="flex gap-2">
       <Popover v-model:open="popoverOpen">
@@ -103,22 +108,22 @@ function clearFilters() {
             v-model="dateRange"
             @update:model-value="onDateChange"
             class="rounded-md border"
+            D
           />
         </PopoverContent>
       </Popover>
 
       <Input type="text" placeholder="Search" v-model="search" />
 
-      <Button
-        v-if="search || dateRange.start || dateRange.end"
-        variant="ghost"
-        @click="clearFilters"
-        >Clear filters</Button
-      >
+      <Button v-if="hasFilters" variant="ghost" @click="clearFilters">Clear filters</Button>
     </div>
 
-    <pre class="border-gray-400 border-1 rounded-md px-4 py-2 w-full flex-1 overflow-y-auto">{{
-      filteredLines.map((l) => l.text).join('\n')
-    }}</pre>
+    <div
+      class="dark:bg-accent/30 border rounded-md px-4 py-2 w-full flex-1 bg-transparent overflow-auto scrollbar-thin scrollbar-thumb-accent-foreground scrollbar-track-[rgba(0,0,0,0)]"
+    >
+      <p class="flex items-center justify-center" v-if="hasFilters && !logOutput">No results</p>
+
+      <pre class="text-xs">{{ logOutput }}</pre>
+    </div>
   </main>
 </template>
