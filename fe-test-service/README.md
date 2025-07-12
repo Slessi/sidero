@@ -21,10 +21,3 @@ _out/server-linux-amd64
 ```
 
 The server will start listening on HTTP on port 12000.
-
-### The Task
-
-Implement a simple web app using Vue JS preferrably, which will load the logs and render them efficiently on the page.
-It should also support a live search of the logs.
-
-The frontend project can be created in the same repo to simplify things.
