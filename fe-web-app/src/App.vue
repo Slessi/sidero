@@ -100,9 +100,9 @@ function clearFilters() {
         <template v-else="hasFilters">No results</template>
       </p>
 
-      <Button @click="refetch" variant="outline" class="mx-auto" v-if="error">Retry</Button>
+      <Button @click="refetch" variant="outline" v-if="error">Retry</Button>
 
-      <pre class="text-xs">{{ logOutput }}</pre>
+      <pre class="text-xs w-full">{{ logOutput }}</pre>
     </div>
   </main>
 </template>
