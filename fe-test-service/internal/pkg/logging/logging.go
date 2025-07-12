@@ -19,6 +19,9 @@ type Handler struct {
 
 // ServeHTTP implements http.Handler.
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// Enable CORS
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	metrics := httpsnoop.CaptureMetrics(h.h, w, r)
 
 	log.Printf("%s request, url: %s, duration: %s, status: %d",
